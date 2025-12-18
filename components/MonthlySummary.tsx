@@ -37,30 +37,35 @@ const MonthlySummary: React.FC<MonthlySummaryProps> = ({ overtimeData, currentDi
   };
 
   const paymentMonthName = getMonthName(currentDisplayMonth.getMonth());
+  const paymentYear = currentDisplayMonth.getFullYear();
 
   return (
-    <div className="px-3 py-2 bg-white rounded-xl shadow-sm border border-slate-200 shrink-0">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex flex-col">
-          <h3 className="text-[11px] font-black text-slate-800 uppercase tracking-tight leading-none">{t('monthlySummary.title')}</h3>
-          <p className="text-[9px] font-medium text-slate-400 uppercase tracking-tighter">
-            {paymentMonthName}
-          </p>
-        </div>
-        <span className="text-[9px] text-slate-400 font-bold bg-slate-100 px-1.5 py-0.5 rounded-full">
-          {formatSummaryDisplayDate(periodStartDate)} - {formatSummaryDisplayDate(periodEndDate)}
-        </span>
+    <div className="p-5 bg-white rounded-2xl shadow-sm border border-slate-200">
+      <div className="flex flex-col mb-4">
+        <h3 className="text-base font-bold text-slate-800">{t('monthlySummary.title')}</h3>
+        <p className="text-xs font-medium text-slate-400 uppercase tracking-tighter">
+          {t('monthlySummary.paymentForLabel', { month: paymentMonthName, year: paymentYear })}
+        </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <div className="flex items-center justify-between p-2 bg-sky-50 border border-sky-100 rounded-lg">
-          <span className="text-[9px] font-bold text-sky-600 uppercase tracking-tight">Normal</span>
-          <p className="text-sm font-black text-sky-900">{totalNormalHours.toFixed(1)}<span className="text-[9px] ml-0.5 font-bold">h</span></p>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="p-3 bg-sky-50 border border-sky-100 rounded-xl">
+          <p className="text-[10px] font-bold text-sky-600 uppercase tracking-tight mb-1">{t('monthlySummary.normalOvertimeLabel')}</p>
+          <p className="text-xl font-black text-sky-900">{totalNormalHours.toFixed(1)}<span className="text-sm ml-0.5">hs</span></p>
         </div>
-        <div className="flex items-center justify-between p-2 bg-indigo-50 border border-indigo-100 rounded-lg">
-          <span className="text-[9px] font-bold text-indigo-600 uppercase tracking-tight">Noche</span>
-          <p className="text-sm font-black text-indigo-900">{totalNightHours.toFixed(1)}<span className="text-[9px] ml-0.5 font-bold">h</span></p>
+        <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl">
+          <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-tight mb-1">{t('monthlySummary.nightOvertimeLabel')}</p>
+          <p className="text-xl font-black text-indigo-900">{totalNightHours.toFixed(1)}<span className="text-sm ml-0.5">hs</span></p>
         </div>
+      </div>
+
+      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+        <span className="text-[10px] text-slate-400 font-medium">
+          Período: {formatSummaryDisplayDate(periodStartDate)} - {formatSummaryDisplayDate(periodEndDate)}
+        </span>
+        { (totalNormalHours === 0 && totalNightHours === 0) && (
+          <span className="text-[10px] text-slate-300 italic">{t('monthlySummary.noOvertimeMessage')}</span>
+        )}
       </div>
     </div>
   );
