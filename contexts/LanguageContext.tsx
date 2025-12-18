@@ -1,5 +1,5 @@
 
-import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useState, useCallback, ReactNode } from 'react';
 import { en, es } from '../locales/translations';
 
 type Language = 'en' | 'es';
@@ -31,16 +31,16 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     return (storedLang === 'en' || storedLang === 'es') ? storedLang : DEFAULT_LANGUAGE;
   });
 
-  const translations = translationsMap[language];
-
   const setLanguage = (newLang: Language) => {
     setLanguageState(newLang); 
     localStorage.setItem(LANGUAGE_KEY, newLang);
   };
 
   const t = useCallback((key: string, replacements?: Record<string, string | number>): string => {
+    const currentTranslations = translationsMap[language];
     const keyParts = key.split('.');
-    let text: any = translations;
+    let text: any = currentTranslations;
+    
     for (const part of keyParts) {
       if (text && typeof text === 'object' && part in text) {
         text = text[part];
@@ -53,13 +53,14 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
         return key; 
     }
     
+    let result = text;
     if (replacements) {
       Object.entries(replacements).forEach(([placeholder, value]) => {
-        text = (text as string).replace(new RegExp(`{${placeholder}}`, 'g'), String(value));
+        result = result.replace(new RegExp(`{${placeholder}}`, 'g'), String(value));
       });
     }
-    return text as string;
-  }, [translations]);
+    return result;
+  }, [language]);
   
   const formatDate = useCallback((date: Date, options: Intl.DateTimeFormatOptions): string => {
     try {

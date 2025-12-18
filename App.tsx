@@ -23,17 +23,8 @@ const App: React.FC = () => {
   const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
   const [selectedDayDetails, setSelectedDayDetails] = useState<DayInfo | null>(null);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
   useEffect(() => {
-    // Detectar si la app ya está instalada en el iPhone (modo standalone)
-    const isStandalone = window.navigator.hasOwnProperty('standalone') && (window.navigator as any).standalone;
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    
-    if (isIOS && !isStandalone) {
-      setShowInstallPrompt(true);
-    }
-
     const loadedData = loadDataFromLocalStorage();
     if (loadedData.rotationPattern) setRotationPattern(loadedData.rotationPattern);
     if (loadedData.rotationStartDate) {
@@ -152,20 +143,6 @@ const App: React.FC = () => {
             overtimePayPeriodStartDay={overtimePayPeriodStartDay}
           />
         </div>
-
-        {/* Aviso de instalación para iPhone */}
-        {showInstallPrompt && (
-          <div className="fixed bottom-6 left-4 right-4 bg-white p-4 rounded-2xl shadow-2xl border border-blue-100 z-[100] animate-bounce-slow">
-            <div className="flex items-center gap-4">
-              <div className="text-3xl">📲</div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-slate-800">Instalar como App</p>
-                <p className="text-xs text-slate-500">Pulsa <span className="inline-block px-1 border rounded bg-slate-50">↑</span> y luego <span className="font-bold">"Añadir a inicio"</span></p>
-              </div>
-              <button onClick={() => setShowInstallPrompt(false)} className="text-slate-400 p-2">✕</button>
-            </div>
-          </div>
-        )}
 
         <ShiftSetupModal
           isOpen={isSetupModalOpen}
