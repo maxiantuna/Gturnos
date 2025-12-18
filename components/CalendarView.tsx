@@ -17,25 +17,23 @@ const CalendarHeader: React.FC<{currentDisplayMonth: Date, onNavigateMonth: (off
   const year = currentDisplayMonth.getFullYear();
 
   return (
-  <div className="flex items-center justify-between mb-4">
+  <div className="flex items-center justify-between mb-4 px-1">
     <button
       onClick={() => onNavigateMonth(-1)}
-      className="px-4 py-2 bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition-colors text-lg"
+      className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded-full hover:bg-slate-50 transition-colors shadow-sm active:scale-95"
       aria-label={t('buttons.previousMonth')}
-      title={t('buttons.previousMonth')}
     >
-      &#x2190; {/* Left arrow */}
+      <span className="text-xl">←</span>
     </button>
-    <h2 className="text-xl md:text-2xl font-semibold text-slate-700">
-      {t('calendar.headerTitle', { month: monthName, year })}
+    <h2 className="text-lg md:text-xl font-bold text-slate-800 capitalize">
+      {monthName} <span className="text-slate-400 font-medium">{year}</span>
     </h2>
     <button
       onClick={() => onNavigateMonth(1)}
-      className="px-4 py-2 bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition-colors text-lg"
+      className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-600 rounded-full hover:bg-slate-50 transition-colors shadow-sm active:scale-95"
       aria-label={t('buttons.nextMonth')}
-      title={t('buttons.nextMonth')}
     >
-      &#x2192; {/* Right arrow */}
+      <span className="text-xl">→</span>
     </button>
   </div>
   );
@@ -46,15 +44,16 @@ const DayCell: React.FC<{dayInfo: DayInfo, onDayClick: (dayInfo: DayInfo) => voi
   const shiftColorClass = SHIFT_COLORS[dayInfo.shift] || SHIFT_COLORS['Sin Asignar'];
   const displayedShiftName = getShiftDisplayName(dayInfo.shift);
   
-  let cellClasses = `p-1.5 md:p-2 border text-center h-28 md:h-32 flex flex-col justify-start items-center cursor-pointer transition-shadow hover:shadow-md relative ${shiftColorClass}`;
+  let cellClasses = `relative p-1 border-r border-b text-center h-20 md:h-28 flex flex-col justify-between items-center cursor-pointer transition-colors overflow-hidden ${shiftColorClass}`;
+  
   if (!dayInfo.isCurrentMonth) {
-    cellClasses += ' opacity-60';
+    cellClasses += ' opacity-40 grayscale-[0.5]';
   }
   if (dayInfo.isToday) {
-    cellClasses += ' ring-2 ring-blue-500 ring-offset-1';
+    cellClasses += ' ring-inset ring-2 ring-blue-500 z-10';
   }
-   if (dayInfo.isOverridden) {
-    cellClasses += ' border-dashed border-purple-500';
+  if (dayInfo.isOverridden) {
+    cellClasses += ' border-l-4 border-l-blue-600';
   }
 
   const overtimeTooltip = dayInfo.overtime && (dayInfo.overtime.normalHours > 0 || dayInfo.overtime.nightHours > 0) 
@@ -62,18 +61,25 @@ const DayCell: React.FC<{dayInfo: DayInfo, onDayClick: (dayInfo: DayInfo) => voi
     : '';
 
   return (
-    <div className={cellClasses} onClick={() => onDayClick(dayInfo)} role="button" tabIndex={0} 
-         aria-label={`${dayInfo.date.getDate()} ${getShiftDisplayName(dayInfo.shift)} ${dayInfo.isOverridden ? t('calendar.overriddenShiftTooltip') : ''} ${overtimeTooltip || ''}`}>
-      <span className={`font-medium text-xs md:text-sm ${!dayInfo.isCurrentMonth ? 'text-slate-500' : ''}`}>
-        {dayInfo.date.getDate()}
-      </span>
-      <span className="mt-1 text-xs md:text-sm font-semibold block truncate w-full px-0.5" title={displayedShiftName}>
+    <div className={cellClasses} onClick={() => onDayClick(dayInfo)} role="button">
+      <div className="w-full flex justify-between items-start">
+        <span className={`text-[10px] md:text-xs font-bold ${dayInfo.isToday ? 'bg-blue-600 text-white w-5 h-5 flex items-center justify-center rounded-full' : 'text-slate-500'}`}>
+          {dayInfo.date.getDate()}
+        </span>
+        {dayInfo.isOverridden && (
+          <span className="text-blue-700 text-[10px] font-black" title={t('calendar.overriddenShiftTooltip')}>
+            {t('calendar.overriddenShiftIndicator')}
+          </span>
+        )}
+      </div>
+
+      <span className="text-[9px] md:text-xs font-bold uppercase tracking-tighter leading-tight mb-auto mt-1 break-words w-full line-clamp-2">
         {displayedShiftName}
-        {dayInfo.isOverridden && <span className="text-purple-600 ml-0.5" title={t('calendar.overriddenShiftTooltip')}>{t('calendar.overriddenShiftIndicator')}</span>}
       </span>
+
       {(dayInfo.overtime && (dayInfo.overtime.normalHours > 0 || dayInfo.overtime.nightHours > 0)) && (
-        <div className="absolute bottom-1 right-1 md:bottom-1.5 md:right-1.5">
-           <span className="block text-[10px] md:text-xs bg-rose-500 text-white px-1 md:px-1.5 py-0.5 rounded-full shadow" title={overtimeTooltip}>
+        <div className="w-full flex justify-center pb-0.5">
+           <span className="text-[8px] md:text-[10px] bg-rose-600 text-white px-1 rounded-sm font-bold shadow-sm">
             {t('calendar.overtimeIndicator')}
           </span>
         </div>
@@ -84,15 +90,28 @@ const DayCell: React.FC<{dayInfo: DayInfo, onDayClick: (dayInfo: DayInfo) => voi
 
 const CalendarView: React.FC<CalendarViewProps> = ({ days, currentDisplayMonth, onDayClick, onNavigateMonth }) => {
   const { t, getShortWeekdayName } = useLanguage();
-  const weekDayNames = [0,1,2,3,4,5,6].map(idx => getShortWeekdayName(idx));
   
+  // En móvil usamos solo la primera letra
+  const getMobileDayName = (idx: number) => {
+    const name = getShortWeekdayName(idx);
+    return name.charAt(0).toUpperCase();
+  };
+
   return (
-    <div className="p-4 bg-white rounded-lg shadow">
-      <CalendarHeader currentDisplayMonth={currentDisplayMonth} onNavigateMonth={onNavigateMonth} />
-      <div className="grid grid-cols-7 gap-px border-l border-t border-slate-300 bg-slate-300" role="grid">
-        {weekDayNames.map(dayName => (
-          <div key={dayName} className="py-2 text-center font-medium text-xs md:text-sm text-slate-600 bg-slate-100 border-b border-r border-slate-300" role="columnheader">
-            {dayName}
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="p-3 bg-slate-50 border-b border-slate-200">
+        <CalendarHeader currentDisplayMonth={currentDisplayMonth} onNavigateMonth={onNavigateMonth} />
+      </div>
+      
+      <div className="grid grid-cols-7 border-t border-l border-slate-100" role="grid">
+        {[0,1,2,3,4,5,6].map(idx => (
+          <div key={idx} className="py-2 text-center bg-slate-50 border-r border-b border-slate-200" role="columnheader">
+            <span className="hidden md:block text-xs font-bold text-slate-400 uppercase tracking-widest">
+              {getShortWeekdayName(idx)}
+            </span>
+            <span className="block md:hidden text-xs font-black text-slate-400">
+              {getMobileDayName(idx)}
+            </span>
           </div>
         ))}
         {days.map((dayInfo) => (

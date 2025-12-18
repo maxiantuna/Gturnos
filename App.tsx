@@ -97,39 +97,40 @@ const App: React.FC = () => {
   }, [currentDisplayMonth, rotationStartDate, rotationPattern, overtimeData, shiftOverrides]);
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
-      <div className="container mx-auto p-4 max-w-5xl">
-        <header className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 py-4">
-          <div className="flex items-center gap-3">
-              <div className="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-100">
-                <span className="text-xl">🗓️</span>
+    <div className="min-h-screen bg-slate-50 pb-10">
+      <div className="container mx-auto px-2 md:px-4 max-w-5xl">
+        <header className="flex justify-between items-center pt-6 pb-4 md:py-6">
+          <div className="flex items-center gap-2">
+              <div className="bg-blue-600 w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-lg flex items-center justify-center text-white">
+                <span className="text-lg md:text-xl">🗓️</span>
               </div>
-              <h1 className="text-xl font-bold text-slate-800 tracking-tight">{t('app.name')}</h1>
+              <h1 className="text-lg md:text-xl font-black text-slate-800 tracking-tight leading-none">{t('app.name')}</h1>
           </div>
           <button
             onClick={() => setIsSetupModalOpen(true)}
-            className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-all flex items-center text-sm font-bold shadow-md shadow-slate-200"
+            className="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold shadow-lg"
+            title={t('buttons.configureRotation')}
           >
-            <span role="img" aria-label="settings" className="mr-2">⚙️</span>
-            {t('buttons.configureRotation')}
+            <span className="md:mr-2">⚙️</span>
+            <span className="hidden md:inline">{t('buttons.configureRotation')}</span>
           </button>
         </header>
 
         {(!rotationPattern || !rotationStartDate) && initialLoadComplete && (
-          <div className="p-8 bg-white border border-blue-100 text-slate-700 rounded-2xl mb-8 shadow-sm text-center">
-            <div className="text-4xl mb-4">👋</div>
-            <h2 className="text-xl font-bold mb-2 text-slate-800">{t('welcomeMessage.title')}</h2>
-            <p className="mb-6 text-slate-500">{t('welcomeMessage.noSetupText')}</p>
+          <div className="p-6 md:p-10 bg-white border border-blue-100 rounded-2xl mb-6 shadow-sm text-center">
+            <div className="text-4xl mb-3">👋</div>
+            <h2 className="text-lg font-bold mb-1 text-slate-800">{t('welcomeMessage.title')}</h2>
+            <p className="mb-6 text-sm text-slate-500">{t('welcomeMessage.noSetupText')}</p>
             <button 
               onClick={() => setIsSetupModalOpen(true)}
-              className="inline-block px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
+              className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg"
             >
               {t('buttons.configureRotation')}
             </button>
           </div>
         )}
 
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <CalendarView
             days={calendarDays}
             currentDisplayMonth={currentDisplayMonth}
