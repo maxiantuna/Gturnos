@@ -87,8 +87,8 @@ const ShiftSetupModal: React.FC<ShiftSetupModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-start justify-center p-4 z-[100] overflow-y-auto">
-      <div className="bg-white p-4 rounded-3xl shadow-2xl w-full max-w-sm animate-in fade-in zoom-in duration-200 mt-[40px] border border-slate-100">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100] overflow-y-auto">
+      <div className="bg-white p-4 rounded-3xl shadow-2xl w-full max-w-sm animate-in fade-in zoom-in duration-200 border border-slate-100">
         
         <div className="flex justify-between items-center mb-4 px-1">
           <h2 className="text-base font-black text-slate-800 tracking-tight">{t('shiftSetupModal.title')}</h2>
