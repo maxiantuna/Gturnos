@@ -25,6 +25,30 @@ const App: React.FC = () => {
   const [isSetupModalOpen, setIsSetupModalOpen] = useState(false);
   const [selectedDayDetails, setSelectedDayDetails] = useState<DayInfo | null>(null);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  
+  // Estado de conexión
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOfflineReady, setIsOfflineReady] = useState(false);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Verificar si el SW ya activó el caché
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(() => {
+        setIsOfflineReady(true);
+      });
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     const loadedData = loadDataFromLocalStorage();
@@ -101,29 +125,47 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-10 transition-colors duration-300">
       <div className="container mx-auto px-2 md:px-4 max-w-5xl">
-        <header className="flex justify-between items-center pt-6 pb-4 md:py-6">
-          <div className="flex items-center gap-2">
-              <div className="bg-blue-600 w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-lg flex items-center justify-center text-white">
-                <span className="text-lg md:text-xl">🗓️</span>
-              </div>
-              <h1 className="text-lg md:text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">{t('app.name')}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleDarkMode}
-              className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center shadow-md transition-all active:scale-95"
-              aria-label="Toggle Dark Mode"
-            >
-              <span className="text-lg">{isDarkMode ? '☀️' : '🌙'}</span>
-            </button>
-            <button
-              onClick={() => setIsSetupModalOpen(true)}
-              className="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-xl hover:bg-slate-900 dark:hover:bg-slate-600 transition-all flex items-center justify-center text-sm font-bold shadow-lg"
-              title={t('buttons.configureRotation')}
-            >
-              <span className="md:mr-2">⚙️</span>
-              <span className="hidden md:inline">{t('buttons.configureRotation')}</span>
-            </button>
+        <header className="flex flex-col pt-6 pb-4 md:py-6">
+          <div className="flex justify-between items-center w-full">
+            <div className="flex items-center gap-2">
+                <div className="bg-blue-600 w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-lg flex items-center justify-center text-white">
+                  <span className="text-lg md:text-xl">🗓️</span>
+                </div>
+                <div className="flex flex-col">
+                  <h1 className="text-lg md:text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">{t('app.name')}</h1>
+                  {/* Indicador de Estado de Conexión */}
+                  <div className="flex items-center gap-1.5 mt-1">
+                    {!isOnline ? (
+                      <span className="flex items-center gap-1 text-[9px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
+                        SIN CONEXIÓN
+                      </span>
+                    ) : isOfflineReady ? (
+                      <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                        LISTA OFFLINE
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleDarkMode}
+                className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center shadow-md transition-all active:scale-95"
+                aria-label="Toggle Dark Mode"
+              >
+                <span className="text-lg">{isDarkMode ? '☀️' : '🌙'}</span>
+              </button>
+              <button
+                onClick={() => setIsSetupModalOpen(true)}
+                className="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-xl hover:bg-slate-900 dark:hover:bg-slate-600 transition-all flex items-center justify-center text-sm font-bold shadow-lg"
+                title={t('buttons.configureRotation')}
+              >
+                <span className="md:mr-2">⚙️</span>
+                <span className="hidden md:inline">{t('buttons.configureRotation')}</span>
+              </button>
+            </div>
           </div>
         </header>
 

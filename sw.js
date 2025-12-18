@@ -1,8 +1,8 @@
 
-const CACHE_NAME = 'turnos-app-v4';
+const CACHE_NAME = 'turnos-app-v5';
 
-// Lista completa de archivos locales (código fuente y assets)
-const APP_ASSETS = [
+// Lista exhaustiva de todos los recursos necesarios para que la app cargue
+const ASSETS = [
   '/',
   '/index.html',
   '/index.tsx',
@@ -20,11 +20,7 @@ const APP_ASSETS = [
   '/contexts/ThemeContext.tsx',
   '/contexts/AuthContext.tsx',
   '/hooks/useLanguage.ts',
-  '/locales/translations.ts'
-];
-
-// Dependencias externas (deben coincidir EXACTAMENTE con el importmap de index.html)
-const EXTERNAL_ASSETS = [
+  '/locales/translations.ts',
   'https://cdn.tailwindcss.com',
   'https://esm.sh/react@^19.1.0',
   'https://esm.sh/react-dom@^19.1.0',
@@ -36,51 +32,51 @@ const EXTERNAL_ASSETS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Cacheando archivos para uso offline...');
-      // Usamos un enfoque más robusto: intentar cachear todo, pero no fallar si uno solo falla
-      return Promise.allSettled(
-        [...APP_ASSETS, ...EXTERNAL_ASSETS].map(url => 
-          cache.add(url).catch(err => console.warn(`Fallo al cachear: ${url}`, err))
-        )
-      );
+      console.log('SW: Cacheando recursos...');
+      return cache.addAll(ASSETS).catch(err => {
+        console.error('SW: Error cacheando archivos críticos', err);
+      });
     })
   );
-  // Fuerza al SW a activarse inmediatamente
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
       );
     }).then(() => self.clients.claim())
   );
 });
 
+// Estrategia: Cache First (Priorizar caché) para carga rápida y offline
 self.addEventListener('fetch', (event) => {
-  // Solo interceptamos peticiones GET
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
+      // Si está en caché, lo devolvemos inmediatamente
       if (cachedResponse) {
         return cachedResponse;
       }
 
-      return fetch(event.request).then((response) => {
-        // Si la respuesta es válida, la guardamos en caché para la próxima vez
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
+      // Si no, intentamos ir a la red
+      return fetch(event.request).then((networkResponse) => {
+        if (!networkResponse || networkResponse.status !== 200) {
+          return networkResponse;
         }
-        return response;
+        
+        // Guardamos en caché lo nuevo que hayamos pedido
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+        
+        return networkResponse;
       }).catch(() => {
-        // Si falla el fetch (offline) y no está en caché, devolvemos el index.html
-        // Esto ayuda con las rutas de la SPA
+        // Si la red falla y es una navegación, devolver el index.html
         if (event.request.mode === 'navigate') {
           return caches.match('/');
         }
