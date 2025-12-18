@@ -8,10 +8,12 @@ import { ShiftPattern, DailyOvertime, DayInfo, PredefinedShift, ShiftOverrideSet
 import { generateCalendarDays, formatDateToYYYYMMDD } from './utils/calendarUtils';
 import { loadDataFromLocalStorage, saveDataToLocalStorage } from './utils/localStorageUtils';
 import { useLanguage } from './hooks/useLanguage';
+import { useTheme } from './contexts/ThemeContext';
 import { DEFAULT_OVERTIME_PAY_PERIOD_START_DAY } from './constants';
 
 const App: React.FC = () => {
   const { t } = useLanguage(); 
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   const [currentDisplayMonth, setCurrentDisplayMonth] = useState(new Date());
   const [rotationPattern, setRotationPattern] = useState<ShiftPattern | null>(null);
@@ -97,30 +99,39 @@ const App: React.FC = () => {
   }, [currentDisplayMonth, rotationStartDate, rotationPattern, overtimeData, shiftOverrides]);
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-10">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pb-10 transition-colors duration-300">
       <div className="container mx-auto px-2 md:px-4 max-w-5xl">
         <header className="flex justify-between items-center pt-6 pb-4 md:py-6">
           <div className="flex items-center gap-2">
               <div className="bg-blue-600 w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-lg flex items-center justify-center text-white">
                 <span className="text-lg md:text-xl">🗓️</span>
               </div>
-              <h1 className="text-lg md:text-xl font-black text-slate-800 tracking-tight leading-none">{t('app.name')}</h1>
+              <h1 className="text-lg md:text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">{t('app.name')}</h1>
           </div>
-          <button
-            onClick={() => setIsSetupModalOpen(true)}
-            className="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold shadow-lg"
-            title={t('buttons.configureRotation')}
-          >
-            <span className="md:mr-2">⚙️</span>
-            <span className="hidden md:inline">{t('buttons.configureRotation')}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleDarkMode}
+              className="w-10 h-10 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl flex items-center justify-center shadow-md transition-all active:scale-95"
+              aria-label="Toggle Dark Mode"
+            >
+              <span className="text-lg">{isDarkMode ? '☀️' : '🌙'}</span>
+            </button>
+            <button
+              onClick={() => setIsSetupModalOpen(true)}
+              className="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-xl hover:bg-slate-900 dark:hover:bg-slate-600 transition-all flex items-center justify-center text-sm font-bold shadow-lg"
+              title={t('buttons.configureRotation')}
+            >
+              <span className="md:mr-2">⚙️</span>
+              <span className="hidden md:inline">{t('buttons.configureRotation')}</span>
+            </button>
+          </div>
         </header>
 
         {(!rotationPattern || !rotationStartDate) && initialLoadComplete && (
-          <div className="p-6 md:p-10 bg-white border border-blue-100 rounded-2xl mb-6 shadow-sm text-center">
+          <div className="p-6 md:p-10 bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-2xl mb-6 shadow-sm text-center">
             <div className="text-4xl mb-3">👋</div>
-            <h2 className="text-lg font-bold mb-1 text-slate-800">{t('welcomeMessage.title')}</h2>
-            <p className="mb-6 text-sm text-slate-500">{t('welcomeMessage.noSetupText')}</p>
+            <h2 className="text-lg font-bold mb-1 text-slate-800 dark:text-slate-100">{t('welcomeMessage.title')}</h2>
+            <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">{t('welcomeMessage.noSetupText')}</p>
             <button 
               onClick={() => setIsSetupModalOpen(true)}
               className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg"

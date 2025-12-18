@@ -17,6 +17,21 @@
     
     <!-- Scripts externos que el SW guardará en caché -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Configuración de Tailwind para usar la clase 'dark'
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {}
+        }
+      }
+      
+      // Script inicial para evitar parpadeo blanco
+      const theme = localStorage.getItem('rotativeShiftTheme');
+      if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
     
     <style>
       :root {
@@ -37,6 +52,11 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        transition: background-color 0.3s ease;
+      }
+
+      html.dark body {
+        background-color: #0f172a; /* slate-900 */
       }
 
       #root {
@@ -70,7 +90,7 @@
 }
 </script>
   </head>
-  <body class="bg-slate-50 text-slate-900">
+  <body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
