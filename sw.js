@@ -1,14 +1,12 @@
 
-const CACHE_NAME = 'turnos-app-v2';
+const CACHE_NAME = 'turnos-app-v3';
 
 // Archivos críticos de nuestra app
 const APP_ASSETS = [
   '/',
   '/index.html',
   '/index.tsx',
-  '/manifest.json',
-  '/locales/es.json',
-  '/locales/en.json'
+  '/manifest.json'
 ];
 
 // Dependencias externas que normalmente requerirían internet
@@ -28,7 +26,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Estrategia: "Cache First" (Primero buscar en memoria, si no está, ir a internet)
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
@@ -36,7 +33,6 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
       return fetch(event.request).then((response) => {
-        // Guardar nuevas peticiones en caché (por si acaso)
         if (response.status === 200) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -46,13 +42,11 @@ self.addEventListener('fetch', (event) => {
         return response;
       });
     }).catch(() => {
-      // Si falla todo (no hay internet ni cache), podrías devolver una página offline básica
       return caches.match('/');
     })
   );
 });
 
-// Limpiar cachés antiguas al actualizar la app
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
