@@ -71,42 +71,45 @@ const OvertimeModal: React.FC<OvertimeModalProps> = ({
   const translatedOriginalShiftPattern = getShiftDisplayName(originalShiftFromPattern);
 
   return (
-    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-start justify-center p-2 z-[100] overflow-y-auto">
-      <div className="bg-white p-3 rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-200 mt-2">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-start justify-center p-4 z-[100] overflow-y-auto">
+      <div className="bg-white p-4 rounded-2xl shadow-2xl w-full max-w-sm animate-in fade-in zoom-in duration-200 mt-[20px] border border-slate-100">
         
-        <div className="mb-2 flex justify-between items-start">
-          <div>
+        <div className="mb-3 flex justify-between items-start">
+          <div className="flex flex-col">
             <h2 className="text-base font-black text-slate-800 tracking-tight leading-none">{t('overtimeModal.title')}</h2>
-            <p className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1">{formattedDateStr}</p>
+            <p className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1.5 ml-0.5">{formattedDateStr}</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1">
-            <span className="text-lg">✕</span>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors">
+            <span className="text-xl leading-none">✕</span>
           </button>
         </div>
         
-        <div className="space-y-3">
-          {/* SELECCIÓN DE TURNO */}
-          <div>
-            <label htmlFor="shiftOverride" className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
+        <div className="space-y-4">
+          <div className="flex flex-col">
+            <label htmlFor="shiftOverride" className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">
               {t('overtimeModal.assignedShiftLabel')}
             </label>
-            <select
-              id="shiftOverride"
-              value={selectedShiftOverride}
-              onChange={(e) => setSelectedShiftOverride(e.target.value as PredefinedShift | typeof REVERT_TO_PATTERN_SHIFT)}
-              className="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:border-blue-500 transition-all outline-none font-bold text-xs text-slate-700 appearance-none cursor-pointer"
-            >
-              <option value={REVERT_TO_PATTERN_SHIFT}>🔄 {translatedOriginalShiftPattern}</option>
-              {ALL_PREDEFINED_SHIFTS_VALUES.map(shift => (
-                <option key={shift} value={shift}>{getShiftDisplayName(shift)}</option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="shiftOverride"
+                value={selectedShiftOverride}
+                onChange={(e) => setSelectedShiftOverride(e.target.value as PredefinedShift | typeof REVERT_TO_PATTERN_SHIFT)}
+                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:border-blue-500 transition-all outline-none font-bold text-xs text-slate-700 appearance-none cursor-pointer"
+              >
+                <option value={REVERT_TO_PATTERN_SHIFT}>🔄 Volver a: {translatedOriginalShiftPattern}</option>
+                {ALL_PREDEFINED_SHIFTS_VALUES.map(shift => (
+                  <option key={shift} value={shift}>{getShiftDisplayName(shift)}</option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px]">
+                ▼
+              </div>
+            </div>
           </div>
 
-          {/* HORAS EXTRAS */}
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label htmlFor="normalHours" className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col">
+              <label htmlFor="normalHours" className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">
                 Normales
               </label>
               <input
@@ -116,12 +119,12 @@ const OvertimeModal: React.FC<OvertimeModalProps> = ({
                 onChange={(e) => setNormalHours(parseFloat(e.target.value))}
                 min="0"
                 step="0.5"
-                className="w-full p-2 bg-sky-50 border border-sky-100 rounded-lg outline-none font-black text-sky-900 text-center text-xs"
+                className="w-full p-3 bg-sky-50 border border-sky-100 rounded-xl focus:border-sky-300 outline-none font-black text-sky-900 text-center text-xs"
               />
             </div>
 
-            <div>
-              <label htmlFor="nightHours" className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
+            <div className="flex flex-col">
+              <label htmlFor="nightHours" className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-1">
                 Nocturnas
               </label>
               <input
@@ -131,23 +134,23 @@ const OvertimeModal: React.FC<OvertimeModalProps> = ({
                 onChange={(e) => setNightHours(parseFloat(e.target.value))}
                 min="0"
                 step="0.5"
-                className="w-full p-2 bg-indigo-50 border border-indigo-100 rounded-lg outline-none font-black text-indigo-900 text-center text-xs"
+                className="w-full p-3 bg-indigo-50 border border-indigo-100 rounded-xl focus:border-indigo-300 outline-none font-black text-indigo-900 text-center text-xs"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-1">
+          <div className="grid grid-cols-2 gap-3 pt-2 mt-1 border-t border-slate-100">
             <button
               type="button"
               onClick={onClose}
-              className="p-2.5 bg-slate-100 text-slate-600 rounded-xl font-black text-xs transition-colors"
+              className="p-3 bg-slate-100 text-slate-600 rounded-xl font-black text-xs transition-colors hover:bg-slate-200"
             >
               {t('buttons.cancel')}
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="p-2.5 bg-emerald-600 text-white rounded-xl font-black text-xs shadow-md shadow-emerald-50 transition-all active:scale-95"
+              className="p-3 bg-emerald-600 text-white rounded-xl font-black text-xs shadow-lg shadow-emerald-50 transition-all active:scale-95 hover:bg-emerald-700"
             >
               {t('buttons.saveChanges')}
             </button>
