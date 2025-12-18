@@ -1,0 +1,5 @@
+{
+  "name": "Gestor de Turnos Rotativos",
+  "description": "Una aplicación para crear y gestionar horarios de turnos rotativos, registrar horas extras y ver resúmenes mensuales. Permite definir un patrón de rotación, aplicarlo al calendario y hacer seguimiento de las horas trabajadas.",
+  "requestFramePermissions": []
+}
