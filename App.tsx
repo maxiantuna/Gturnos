@@ -97,40 +97,39 @@ const App: React.FC = () => {
   }, [currentDisplayMonth, rotationStartDate, rotationPattern, overtimeData, shiftOverrides]);
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-10">
-      <div className="container mx-auto px-2 md:px-4 max-w-5xl">
-        <header className="flex justify-between items-center pt-6 pb-4 md:py-6">
+    <div className="h-full bg-slate-50 overflow-hidden flex flex-col">
+      <div className="container mx-auto px-2 md:px-4 max-w-5xl flex flex-col h-full py-1 md:py-4">
+        <header className="flex justify-between items-center py-2 shrink-0">
           <div className="flex items-center gap-2">
-              <div className="bg-blue-600 w-8 h-8 md:w-10 md:h-10 rounded-lg shadow-lg flex items-center justify-center text-white">
-                <span className="text-lg md:text-xl">🗓️</span>
+              <div className="bg-blue-600 w-7 h-7 md:w-9 md:h-9 rounded-lg shadow-md flex items-center justify-center text-white">
+                <span className="text-sm md:text-lg">🗓️</span>
               </div>
-              <h1 className="text-lg md:text-xl font-black text-slate-800 tracking-tight leading-none">{t('app.name')}</h1>
+              <h1 className="text-base md:text-xl font-black text-slate-800 tracking-tight leading-none">{t('app.name')}</h1>
           </div>
           <button
             onClick={() => setIsSetupModalOpen(true)}
-            className="w-10 h-10 md:w-auto md:px-4 md:py-2 bg-slate-800 text-white rounded-xl hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold shadow-lg"
+            className="w-8 h-8 md:w-auto md:px-3 md:py-1.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-all flex items-center justify-center text-sm font-bold shadow-md"
             title={t('buttons.configureRotation')}
           >
-            <span className="md:mr-2">⚙️</span>
-            <span className="hidden md:inline">{t('buttons.configureRotation')}</span>
+            <span className="md:mr-1">⚙️</span>
+            <span className="hidden md:inline text-xs">{t('buttons.configureRotation')}</span>
           </button>
         </header>
 
         {(!rotationPattern || !rotationStartDate) && initialLoadComplete && (
-          <div className="p-6 md:p-10 bg-white border border-blue-100 rounded-2xl mb-6 shadow-sm text-center">
-            <div className="text-4xl mb-3">👋</div>
-            <h2 className="text-lg font-bold mb-1 text-slate-800">{t('welcomeMessage.title')}</h2>
-            <p className="mb-6 text-sm text-slate-500">{t('welcomeMessage.noSetupText')}</p>
+          <div className="p-4 bg-white border border-blue-100 rounded-xl mb-2 shadow-sm text-center shrink-0">
+            <h2 className="text-sm font-bold text-slate-800">{t('welcomeMessage.title')}</h2>
+            <p className="text-[10px] text-slate-500 mb-2">{t('welcomeMessage.noSetupText')}</p>
             <button 
               onClick={() => setIsSetupModalOpen(true)}
-              className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg"
+              className="px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg shadow-md"
             >
               {t('buttons.configureRotation')}
             </button>
           </div>
         )}
 
-        <div className="space-y-4 md:space-y-6">
+        <div className="flex-grow overflow-hidden flex flex-col space-y-2">
           <CalendarView
             days={calendarDays}
             currentDisplayMonth={currentDisplayMonth}

@@ -67,78 +67,87 @@ const OvertimeModal: React.FC<OvertimeModalProps> = ({
     onClose();
   };
   
-  const formattedDateStr = formatDate(selectedDate, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const formattedDateStr = formatDate(selectedDate, { weekday: 'long', day: 'numeric', month: 'long' });
   const translatedOriginalShiftPattern = getShiftDisplayName(originalShiftFromPattern);
   const followPatternOptionText = t('overtimeModal.followPatternOption', { originalShift: translatedOriginalShiftPattern });
-  const followPatternInfoText = t('overtimeModal.followPatternInfo', { originalShift: translatedOriginalShiftPattern });
-
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-1 text-slate-700">{t('overtimeModal.title')}</h2>
-        <p className="text-sm text-slate-500 mb-4">{formattedDateStr}</p>
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50 overflow-y-auto">
+      <div className="bg-white p-6 rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md animate-in slide-in-from-bottom duration-300">
         
-        <div className="mb-4">
-          <label htmlFor="shiftOverride" className="block text-sm font-medium text-slate-600 mb-1">{t('overtimeModal.assignedShiftLabel')}</label>
-          <select
-            id="shiftOverride"
-            value={selectedShiftOverride}
-            onChange={(e) => setSelectedShiftOverride(e.target.value as PredefinedShift | typeof REVERT_TO_PATTERN_SHIFT)}
-            className="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            aria-describedby="shift-override-help"
-          >
-            <option value={REVERT_TO_PATTERN_SHIFT}>{followPatternOptionText}</option>
-            {ALL_PREDEFINED_SHIFTS_VALUES.map(shift => (
-              <option key={shift} value={shift}>{getShiftDisplayName(shift)}</option>
-            ))}
-          </select>
-           {isShiftOverridden && selectedShiftOverride === REVERT_TO_PATTERN_SHIFT && (
-            <p id="shift-override-help" className="text-xs text-slate-500 mt-1">{followPatternInfoText}</p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="normalHours" className="block text-sm font-medium text-slate-600 mb-1">{t('overtimeModal.normalOvertimeLabel')}</label>
-          <input
-            type="number"
-            id="normalHours"
-            value={normalHours}
-            onChange={(e) => setNormalHours(parseFloat(e.target.value))}
-            min="0"
-            step="0.5"
-            className="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
         <div className="mb-6">
-          <label htmlFor="nightHours" className="block text-sm font-medium text-slate-600 mb-1">{t('overtimeModal.nightOvertimeLabel')}</label>
-          <input
-            type="number"
-            id="nightHours"
-            value={nightHours}
-            onChange={(e) => setNightHours(parseFloat(e.target.value))}
-            min="0"
-            step="0.5"
-            className="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
+          <h2 className="text-xl font-black text-slate-800 tracking-tight">{t('overtimeModal.title')}</h2>
+          <p className="text-xs font-bold text-blue-600 uppercase tracking-widest">{formattedDateStr}</p>
         </div>
+        
+        <div className="space-y-5">
+          {/* SELECCIÓN DE TURNO */}
+          <div>
+            <label htmlFor="shiftOverride" className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+              {t('overtimeModal.assignedShiftLabel')}
+            </label>
+            <select
+              id="shiftOverride"
+              value={selectedShiftOverride}
+              onChange={(e) => setSelectedShiftOverride(e.target.value as PredefinedShift | typeof REVERT_TO_PATTERN_SHIFT)}
+              className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none font-bold text-slate-700 appearance-none cursor-pointer"
+            >
+              <option value={REVERT_TO_PATTERN_SHIFT}>🔄 {followPatternOptionText}</option>
+              {ALL_PREDEFINED_SHIFTS_VALUES.map(shift => (
+                <option key={shift} value={shift}>{getShiftDisplayName(shift)}</option>
+              ))}
+            </select>
+          </div>
 
-        <div className="flex justify-end space-x-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-slate-200 text-slate-700 rounded-md hover:bg-slate-300 transition-colors"
-          >
-            {t('buttons.cancel')}
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-          >
-            {t('buttons.saveChanges')}
-          </button>
+          {/* HORAS EXTRAS */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="normalHours" className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                Normales
+              </label>
+              <input
+                type="number"
+                id="normalHours"
+                value={normalHours}
+                onChange={(e) => setNormalHours(parseFloat(e.target.value))}
+                min="0"
+                step="0.5"
+                className="w-full p-4 bg-sky-50 border border-sky-100 rounded-2xl focus:ring-4 focus:ring-sky-100 focus:border-sky-500 outline-none font-black text-sky-900 text-center"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="nightHours" className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                Nocturnas
+              </label>
+              <input
+                type="number"
+                id="nightHours"
+                value={nightHours}
+                onChange={(e) => setNightHours(parseFloat(e.target.value))}
+                min="0"
+                step="0.5"
+                className="w-full p-4 bg-indigo-50 border border-indigo-100 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none font-black text-indigo-900 text-center"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-4 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 font-black text-sm transition-colors"
+            >
+              {t('buttons.cancel')}
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="p-4 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 font-black text-sm shadow-xl shadow-emerald-100 transition-all active:scale-95"
+            >
+              {t('buttons.saveChanges')}
+            </button>
+          </div>
         </div>
       </div>
     </div>
